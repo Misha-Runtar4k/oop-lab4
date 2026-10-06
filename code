@@ -1,0 +1,217 @@
+using System;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Xml.Linq;
+
+namespace Ukraine_Region
+{
+    class Region
+    {
+        private string _name;
+        private double _area;
+        private int _population;
+        private string _adminCenter;
+        private int _adminCenterPopulation;
+
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if( value == null)
+                {
+                    Console.WriteLine("Помилка: Область не може бути без назви");
+                }
+                else
+                {
+                    _name = value;
+                }
+            }
+        }
+        public double Area
+        {
+            get
+            {
+                return _area;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    Console.WriteLine("Помилка: Площа не може бути від'ємною або нульовою.");
+                }
+                else
+                {
+                    _area = value;
+                }
+            }
+        }
+        public int Population
+        {
+            get
+            {
+                return _population;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    Console.WriteLine("Помилка: Кількість населення не може бути від'ємною.");
+                }
+                else
+                {
+                    _population = value;
+                }
+            }
+        }
+        public string AdminCenter
+        {
+            get
+            {
+                return _adminCenter;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    Console.WriteLine("Помилка: Адміністративний центр не може бути без назви");
+                }
+                else
+                {
+                    _adminCenter = value;
+                }
+            }
+        }
+        public int AdminCenterPopulation
+        {
+            get
+            {
+                return _adminCenterPopulation;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    Console.WriteLine("Помилка: Адміністративний центр не може бути без населення ");
+                }
+                else
+                {
+                    _adminCenterPopulation = value;
+                }
+            }
+        }
+        public int DistrictsCount { get; set; }
+        public bool IsCoastal { get; set; }
+        public double PopulationDensity
+        {
+            get
+            {
+                if (Area > 0)
+                    return Math.Round(Population / Area, 2);
+                return 0;
+            }
+        }
+        public void IncreasePopulation(int increment)//метод з передачею за значенням
+        {
+            if (increment > 0)
+            {
+                Population = Population + increment;
+                Console.WriteLine($"Населення збільшилось на {increment}");
+            }
+        }
+        public void CalculateFuturePopulation(int years, double rate, ref int predictedResult)// за посиланням
+        {
+            double decimalRate = rate / 100.0;
+            predictedResult = (int)(Population * Math.Pow(1 + decimalRate, years));
+        }
+        public Region()
+        {
+            Name = "Не визначенно";
+            Area = 1;
+            Population = 1;
+            AdminCenter = "Не визначенно";
+            AdminCenterPopulation = 1;
+            DistrictsCount = 0;
+            IsCoastal = false;
+        }
+        public Region(string adminCenter, int adminCenterPopulation)
+        {
+            Name = "Не визначенно";
+            Area = 1;
+            Population = 1;
+            AdminCenter = adminCenter;
+            AdminCenterPopulation = adminCenterPopulation;
+            DistrictsCount = 0;
+            IsCoastal = false;
+        }
+    
+        public Region(string name, double area, int population)
+        {
+            Name = name;
+            Area = area;
+            Population = population;
+            AdminCenter = "Не визначенно";
+            AdminCenterPopulation = 1;
+            DistrictsCount = 0;
+            IsCoastal = false;
+        }
+
+        public Region(string name, double area, int population, string adminCenter, int adminCenterPopulation,int districtsCount = 0, bool isCoastal = false)
+        {
+            Name = name;
+            Area = area;
+            Population = population;
+            AdminCenter = adminCenter;
+            AdminCenterPopulation = adminCenterPopulation;
+            DistrictsCount = districtsCount;
+            IsCoastal = isCoastal;
+        }
+
+        public void DisplayInfo()
+        {
+
+            Console.WriteLine($"\n Область: {Name}");
+            Console.WriteLine($"Площа: {Area} км^2");
+            Console.WriteLine($"Населення області: {Population} осіб");
+            Console.WriteLine($"Адміністративний центр: {AdminCenter}");
+            Console.WriteLine($"Населення адміністративного центру: {AdminCenterPopulation} осіб");
+            Console.WriteLine($"Кількість районів: {DistrictsCount}");
+            Console.WriteLine($"Вихід до моря: {(IsCoastal ? "Так" : "Ні")}");
+            Console.WriteLine($"Густота населення (розрахункова): {PopulationDensity} осіб/км^2");
+        }
+        public override string ToString()
+        {
+            return $"\n Область: {Name}\nПлоща: {Area} км^2\nНаселення області: {Population} осіб\nАдміністративний центр: {AdminCenter}\nНаселення адміністративного центру: {AdminCenterPopulation} осіб\nГустота: {PopulationDensity} осіб/км^2\nРайонів: {DistrictsCount}\n";
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Region kyivRegion = new Region("Київська", 28131, 1795079, "Київ", 2952301, 7, false);
+            Region lvivRegion = new Region("Львів", 717273);
+            Region sumyRegion = new Region("Сумська", 23834, 1034364);
+            Region odesaRegion = new Region("Одеська область", 33310, 2300000, "Одеса", 10100537);
+            odesaRegion.DistrictsCount = 7;
+            odesaRegion.IsCoastal = true;
+            odesaRegion.IncreasePopulation(1500);
+            int futurePopulation = 0;
+            odesaRegion.CalculateFuturePopulation(5, 1.5, ref futurePopulation);//потрібно вказати рік, відмоток на скільки зільшется населння, та посилання назмінну
+            Console.WriteLine($"Прогноз населення на 5 років в Одеській області складатиме: {futurePopulation}");
+            Region ternopilRegion = new Region();
+
+            Console.WriteLine("=== Відомості про області України ===\n");
+            kyivRegion.DisplayInfo();
+            lvivRegion.DisplayInfo();
+            sumyRegion.DisplayInfo();
+            odesaRegion.DisplayInfo();
+            ternopilRegion.DisplayInfo();
+            Console.ReadLine();
+        }
+    }
+}
